@@ -1,0 +1,84 @@
+<!-- home.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+    }
+    .form-group {
+        margin-bottom: 20px;
+    }
+    label {
+        margin-right: 15px;
+        font-weight: bold;
+        color: #333;
+    }
+    input[type="checkbox"], input[type="radio"] {
+        margin-right: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    li {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 8px;
+        margin-top: 5px;
+    }
+</style>
+<div class="container">
+    <h1>Find Restaurants by Cuisine</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {% for cuisine in cuisines %}
+            <label>
+                <input type="checkbox" name="cuisine" value="{{ cuisine }}"
+                       {% if cuisine in selected_cuisines %}checked{% endif %}>
+                {{ cuisine }}
+            </label>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label><input type="radio" name="sort_by" value="rating" {% if sort_by == 'rating' %}checked{% endif %}> Sort by Rating</label>
+            <label><input type="radio" name="sort_by" value="price" {% if sort_by == 'price' %}checked{% endif %}> Sort by Price</label>
+        </div>
+        <button type="submit" name="search">Search</button>
+    </form>
+
+    {% if restaurants %}
+        <h2>Filtered Restaurants:</h2>
+        <ul>
+            {% for name, city, price, cuisine, avg_rating in restaurants %}
+                <li>{{ name }} - {{ city }}, Cuisine: {{ cuisine }}, Price: ${{ price }}, Average Rating: {{ avg_rating }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No restaurants found based on your selection.</p>
+    {% endif %}
+
+    <h2>Top 5 Popular Cuisines:</h2>
+    <ul>
+        {% for cuisine, count in top_cuisines %}
+            <li>{{ cuisine }}: {{ count }} people prefer this</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
